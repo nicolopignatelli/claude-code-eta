@@ -1,0 +1,5 @@
+{
+  // The engine lays .claude-plugin/types/ when it loads the mod from a folder.
+  "extends": "./.claude-plugin/types/tsconfig.json",
+  "include": [".claude-plugin/types", "hooks", "types"]
+}

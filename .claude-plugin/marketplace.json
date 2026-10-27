@@ -1,0 +1,17 @@
+{
+  "name": "claude-code-eta",
+  "owner": {
+    "name": "Nicolò Pignatelli",
+    "url": "https://github.com/nicolopignatelli"
+  },
+  "metadata": {
+    "description": "The eta mod for Claude Code: progress and ETA of Claude's background processes."
+  },
+  "plugins": [
+    {
+      "name": "eta",
+      "source": "./",
+      "description": "Progress and ETA of Claude's long-running background processes, shown above the prompt, measured by a probe Claude writes for each run."
+    }
+  ]
+}

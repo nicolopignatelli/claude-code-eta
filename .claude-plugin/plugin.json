@@ -1,0 +1,12 @@
+{
+  "name": "eta",
+  "version": "0.1.0",
+  "description": "Progress and ETA of Claude's long-running background processes, shown above the prompt, measured by a probe Claude writes for each run.",
+  "author": {
+    "name": "Nicolò Pignatelli",
+    "url": "https://github.com/nicolopignatelli"
+  },
+  "license": "MIT",
+  "keywords": ["progress", "eta", "background", "tasks", "terminal"],
+  "types": "./types/index.d.ts"
+}
