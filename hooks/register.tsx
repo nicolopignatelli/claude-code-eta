@@ -161,6 +161,26 @@ export const register: Register = on => {
     return { result: `Stopped tracking "${found.label}".` }
   }).catch(() => ({ deny: `${PLUGIN}: stopping failed` }))
 
+  // The moment to track a run is when it goes to the background: Claude reads
+  // a reminder after the result, with the task id it needs; the person sees
+  // nothing of it. Untracked runs only, and never a foreground command.
+  on('tool.call', { tool: 'Bash' }, async ($, e, next) => {
+    const ran = await next(e)
+    if (ran.deny !== undefined || ran.isError === true) {
+      return ran
+    }
+    const taskId = ran.result.backgroundTaskId
+    if (taskId === undefined) {
+      return ran
+    }
+    const isTracked = (await read($, runs)).some(run => run.taskId === taskId && run.ended === null)
+    if (isTracked) {
+      return ran
+    }
+
+    return { ...ran, context: [...(ran.context ?? []), trackingReminder(taskId)] }
+  }).catch(($, e, next) => (next.called ? next(e) : { deny: `${PLUGIN}: its Bash hook failed.` }))
+
   on('ui.render', { component: 'ToolUse' }, ($, e, next) =>
     OWN_TOOLS.has(e.props.tool) && e.props.isExpanded !== true ? <></> : next(e),
   )
@@ -232,6 +252,15 @@ export const register: Register = on => {
 
     return next({ ...e, props: { ...e.props, tail: `⏳ ${run.label} ${count} · ${eta}${more}` } })
   })
+}
+
+function trackingReminder(taskId: string): string {
+  return (
+    `Background task ${taskId} started. If it will run for more than about a minute and leaves ` +
+    `progress it can be counted by (lines in an output file, entries in a log, records in a report), ` +
+    `track it now with mcp__${PLUGIN}__${TOOL_TRACK}, task_id "${taskId}". ` +
+    `If it never ends on its own (a server, a watcher) or leaves nothing to count, don't.`
+  )
 }
 
 function runHeader(Text: any, Box: any, run: Run, now: number, tz: number) {

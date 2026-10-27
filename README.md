@@ -19,6 +19,12 @@ Under the prompt, the hint line gains a dim summary of the run that finishes las
 
 ## How it works
 
+Every time a command goes to the background, the mod adds a short reminder after its
+result, which only Claude reads: the task id, and when a run is worth tracking. A bundled
+skill describes the kinds of runs to track (evals, batches, long builds and test suites,
+parallel runs, runs with stages) and the ones not to (servers and watchers, runs under a
+minute, runs that leave nothing to count).
+
 Progress means something different for every run: beats composed, files built, pages
 crawled. So the mod does not guess. When Claude starts a background process, it calls the
 mod's `track_progress` tool once and hands it:
@@ -93,8 +99,9 @@ Once a session has loaded the mod, Claude Code writes its type declarations to
 
 | File | What it does |
 |---|---|
-| `hooks/register.tsx` | The tools, the probe timer, the pace and ETA, the band and the hint-line tail |
+| `hooks/register.tsx` | The tools, the reminder on background launches, the probe timer, the pace and ETA, the band and the hint-line tail |
 | `types/index.d.ts` | The state the mod keeps: tracked runs, their phases and readings |
+| `skills/eta/SKILL.md` | When a run is worth tracking, and when it is not |
 
 ## License
 
